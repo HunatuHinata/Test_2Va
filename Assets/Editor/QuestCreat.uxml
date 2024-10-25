@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Editor/QuestCreat.uss?fileID=7433441132597879392&amp;guid=ebdced6717d02ba47aacb13830d2dce1&amp;type=3#QuestCreat" />
+    <ui:VisualElement focusable="false" style="flex-grow: 1; flex-direction: row; flex-wrap: nowrap; position: absolute; -unity-background-image-tint-color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); -unity-slice-bottom: 2;">
+        <ui:GroupBox style="width: 410px; -unity-slice-right: 2; -unity-background-image-tint-color: rgb(99, 99, 99); border-right-width: 5px; border-right-color: rgb(0, 0, 0); margin-right: 0; padding-right: 3px; margin-top: 0; margin-bottom: 0; background-image: none; -unity-slice-left: 2; -unity-slice-top: 2; -unity-slice-bottom: 2; -unity-background-scale-mode: stretch-to-fill; background-color: rgb(77, 77, 77); margin-left: 0;">
+            <ui:Label tabindex="-1" text="クエスト詳細" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 20px; -unity-font-style: bold; -unity-text-outline-color: rgba(0, 0, 0, 0); background-color: rgba(0, 0, 0, 0); margin-bottom: 8px;" />
+            <ui:TextField picking-mode="Ignore" label="名前" name="QuestName" hide-mobile-input="false" style="font-size: 15px; -unity-font-style: normal; justify-content: space-around; align-items: center; align-self: stretch; -unity-text-align: upper-left;" />
+            <ui:TextField picking-mode="Ignore" label="詳細説明" name="QuestDetail" multiline="true" auto-correction="false" style="font-size: 15px; -unity-font-style: bold; justify-content: space-around; align-items: stretch; align-self: stretch; -unity-text-align: upper-left; height: 181px; flex-direction: column; white-space: normal; flex-wrap: wrap; text-overflow: clip;" />
+            <ui:Foldout name="Checks" text="設定項目" value="true" tooltip="ゲーム内フラグ" focusable="false" style="font-size: 15px; -unity-font-style: normal;">
+                <ui:Toggle label="受注可能" name="AvailableOrders" tooltip="このクエストを受注することができるかどうか。" value="false" style="-unity-font-style: normal;" />
+                <ui:Toggle label="新規" name="NEW" tooltip="このクエストがまだ受けたことがないかどうか。" value="true" style="-unity-font-style: normal; align-items: center;" />
+                <ui:Toggle label="クリア" name="Clear" tooltip="このクエストがクリア済みかどうか。" value="false" style="-unity-font-style: normal; align-items: center;" />
+            </ui:Foldout>
+            <ui:DropdownField label="Coming Soon" focusable="false" style="display: none;" />
+            <ui:GroupBox name="ButtonsBox" style="flex-direction: row; -unity-text-align: middle-center;">
+                <ui:Button text="作成" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CreatButton" style="width: 375px; white-space: nowrap; -unity-text-align: middle-center;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+        <ui:GroupBox style="width: 425px; margin-top: 0; padding-top: 0; justify-content: space-around; padding-left: 0; padding-bottom: 0; margin-left: 0; margin-bottom: 0; margin-right: 0;">
+            <ui:TextField picking-mode="Ignore" label="検索" name="SearchTextField" keyboard-type="Search" style="flex-direction: row; align-items: flex-start; justify-content: center; align-self: flex-end; width: 351px; flex-wrap: nowrap; -unity-text-align: middle-right; height: 23px; transform-origin: center; translate: 0 0; margin-left: -115px; margin-bottom: 0; margin-right: 0; margin-top: 0; background-image: none; background-color: rgba(137, 137, 137, 0);" />
+            <ui:ListView name="list" style="height: 429px; overflow: visible; flex-wrap: wrap;" />
+            <ui:Button text="削除" parse-escape-sequences="true" display-tooltip-when-elided="true" name="DeleteButton" style="white-space: nowrap; text-overflow: clip; -unity-text-align: middle-center; width: 416px;" />
+        </ui:GroupBox>
+    </ui:VisualElement>
+</ui:UXML>

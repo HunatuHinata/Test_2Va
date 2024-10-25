@@ -1,0 +1,4 @@
+サンプルリポジトリの Assets/Samples/Glitch/Glitch.unity
+https://github.com/applibot-inc/sync2022-ui-sample-techbot/blob/main/Assets/Commoon/CustomImageBase.cs
+https://github.com/applibot-inc/sync2022-ui-sample-techbot/blob/main/Assets/Samples/Glitch/Glitch.cs
+https://github.com/applibot-inc/sync2022-ui-sample-techbot/blob/main/Assets/Samples/Glitch/Glitch.shader
