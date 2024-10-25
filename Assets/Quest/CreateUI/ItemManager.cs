@@ -23,7 +23,8 @@ public class ItemManager : MonoBehaviour
     void Start()
     {
 		m_search = string.Empty;
-		m_searchObject.GetComponent<TextMeshProUGUI>().text = string.Empty;
+		m_searchObject.GetComponent<TMP_InputField>().text = string.Empty;
+		//m_searchObject.GetComponent<TextMeshProUGUI>().text = string.Empty;
 		foreach (Quest quest in m_questSO.quests)
 		{
 			GameObject itemObject = GameObject.Instantiate(m_itemPrefab, m_parent.transform);
@@ -39,11 +40,19 @@ public class ItemManager : MonoBehaviour
 
 	void ItemSearch()
 	{
-		TextMeshProUGUI tmpUGUI_Input = m_searchObject.GetComponent<TextMeshProUGUI>();
-
-		//同じワードの場合
+#if false //TextMeshProUGUIでの作成方法（こっちめんどくさい）
+		TextMeshProUGUI tmp_Input = m_searchObject.GetComponent<TextMeshProUGUI>();
 		string work = string.Empty;
-		for (int i = 0; i < tmpUGUI_Input.text.Length - 1; i++) work += tmpUGUI_Input.text[i];
+		for (int i = 0; i < tmp_Input.text.Length - 1; i++) work += tmp_Input.text[i];
+
+
+#else	//TMP_InputFieldを使用する方法（こっちの方が簡単）
+		TMP_InputField tmp_Input = m_searchObject.GetComponent<TMP_InputField>();
+		
+		//同じワードの場合
+		string work = tmp_Input.text;
+#endif
+
 		if (m_search == work) return;
 		m_search = work;
 
