@@ -378,7 +378,7 @@ GameObject:
   - component: {fileID: 149664438}
   - component: {fileID: 149664439}
   m_Layer: 5
-  m_Name: RightWindow
+  m_Name: List
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -423,6 +423,9 @@ MonoBehaviour:
   m_itemPrefab: {fileID: 7165927236079557341, guid: 9285ac505446b2148ae419f44425d4e3,
     type: 3}
   m_parent: {fileID: 1818275244}
+  m_itemCreat:
+    settingObject: {fileID: 1330678834}
+  m_eventSystem: {fileID: 1064056571}
 --- !u!1 &205600502
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,7 +439,7 @@ GameObject:
   - component: {fileID: 205600505}
   - component: {fileID: 205600504}
   m_Layer: 5
-  m_Name: InputName
+  m_Name: Input
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1256,7 +1259,7 @@ GameObject:
   - component: {fileID: 464081365}
   - component: {fileID: 464081364}
   m_Layer: 5
-  m_Name: ButtonAdd
+  m_Name: ButtonAddOrReplacement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1325,7 +1328,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 464081365}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &464081365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3705,7 +3720,7 @@ GameObject:
   - component: {fileID: 1279500294}
   - component: {fileID: 1279500293}
   m_Layer: 5
-  m_Name: InputExplanation
+  m_Name: Input
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4131,7 +4146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1330678835}
   m_Layer: 5
-  m_Name: LeftWindow
+  m_Name: Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

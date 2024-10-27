@@ -5,22 +5,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [System.Serializable]
-public struct PurolandQuest
-{
-	[Header("受注可能")]
-	[SerializeField] private bool availableForOrders;
-	[Header("新品")]
-	[SerializeField] private bool inaugural;
-	[Header("クエストのクリア")]
-	[SerializeField] private bool clear;
-
-	public (bool possible,bool inaugural,bool clear)GetKeys()
-	{
-		return (availableForOrders, inaugural, clear);
-	}
-}
-
-[System.Serializable]
 public class Quest
 {
 	[Flags]

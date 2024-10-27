@@ -1,13 +1,11 @@
-using Microsoft.Unity.VisualStudio.Editor;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using TMPro;
 using UnityEngine;
-using System.Linq;
 
 public class ItemView : MonoBehaviour
 {
+	const float OVER_ALPHA = 50.0f;
+
 	[SerializeField] float m_closeSize;
 	[SerializeField] float m_openSize;
 
@@ -21,7 +19,6 @@ public class ItemView : MonoBehaviour
 	public void Creat(Quest quest)
 	{
 		m_bOpen = false;
-
 		Initialize(quest);
 	}
 
@@ -37,7 +34,7 @@ public class ItemView : MonoBehaviour
 
 		//子オブジェクトを取得
 		BackScaleChange();
-		ActiveChange();
+		ActiveObjectChanges();
 	}
 
 	void Start()
@@ -52,15 +49,15 @@ public class ItemView : MonoBehaviour
 	}
 
 	void Update()
-	{
-		//if (IsFrontOpen()) return;
+	{		
+		if (!m_bOpen) return;
 
-		
 	}
 
+	//Foldoutの表示変更
 	void FoldoutChanges()
 	{
-		//foldoutの親
+		//子オブジェクトの取得(インデックス[上から])
 		Transform parentFoldout = transform.GetChild(1);
 
 		for (int i = 0; i < parentFoldout.childCount; i++)
@@ -70,21 +67,33 @@ public class ItemView : MonoBehaviour
 		}
 	}
 
+	//Itemの表示サイズを変更
 	void BackScaleChange()
 	{
 		//背景の縦サイズ変更
 		RectTransform rectTra = GetComponent<RectTransform>();
+		RectTransform effectRectTra = transform.Find("Effect").GetComponent<RectTransform>();
+
+		float y = (m_bOpen ? m_openSize : m_closeSize);
+
 		Vector2 scale = rectTra.sizeDelta;
-		scale.y = (m_bOpen ? m_openSize : m_closeSize);
+		scale.y = y;
+		rectTra.sizeDelta = scale;
+
+		scale = effectRectTra.sizeDelta;
+		scale.y = y;
 		rectTra.sizeDelta = scale;
 	}
 
-	void ActiveChange()
+	//HideObjectsの表示・非表示
+	void ActiveObjectChanges()
 	{
-		foreach (GameObject item in m_lstHideObjects) item.SetActive(m_bOpen);
+		foreach (GameObject item in m_lstHideObjects)
+			item.SetActive(m_bOpen);
 	}
 
-	bool IsFrontOpen()
+	//Foldoutが開いているかどうか
+	bool IsFoldoutOpen()
 	{
 		float operatorY = (m_bOpen) ? m_openSize : m_closeSize;
 		float objectY = transform.GetComponent<RectTransform>().sizeDelta.y;
