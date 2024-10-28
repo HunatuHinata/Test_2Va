@@ -74,31 +74,15 @@ public class ItemManager : MonoBehaviour
 		
 		if (!result.Any(o => o.gameObject.CompareTag("ItemUI")))
 		{
+			//m_selectObject.transform.GetComponent<>();
 			m_selectObject = null;
 			return;
 		}
 
 		RaycastResult itemObject = result.Find(o => o.gameObject.CompareTag("ItemUI"));
+		m_selectObject = itemObject.gameObject;
+		//if (result.Any(o => o.gameObject.CompareTag("FoldoutUI"))) ;
 
-		if (result.Any(o => o.gameObject.CompareTag("FoldoutUI"))) ;
-
-
-		// Rayで何もヒットしなかったら画面タッチイベント関数を呼ぶ
-		if (result.Count > 0 && result.Any(o => o.gameObject.CompareTag("Quest")))
-		{
-			Vector3 mousePoint = Input.mousePosition;
-			mousePoint = Camera.main.ScreenToWorldPoint(mousePoint);
-			RaycastHit2D[] hit2D = Physics2D.RaycastAll(mousePoint, Vector3.forward);
-			Debug.Log(hit2D.Length);
-			foreach (RaycastHit2D hit in hit2D)
-			{
-				Debug.Log(hit.collider.transform.name);
-			}
-		}
-		else
-		{
-			
-		}
 	}
 
 	public void OnQuestButton()

@@ -35,22 +35,22 @@ public class ItemCreat
 		string name, explanation;
 
 		//名前＆説明
-		FindTransform("QuestName/Input", out questTransform);
+		FindChilled("QuestName/Input", out questTransform);
 		name = questTransform.GetComponent<TMP_InputField>().text;
-		FindTransform("QuestExplanation/Input", out questTransform);
+		FindChilled("QuestExplanation/Input", out questTransform);
 		explanation = questTransform.GetComponent<TMP_InputField>().text;
 		outQuest.SetQuest(name, explanation);
 		//状態
-		FindTransform("Conditions/ToggleAppearance", out questTransform);
+		FindChilled("Conditions/ToggleAppearance", out questTransform);
 		if (IsToggleOn(questTransform)) outQuest.SetKey(Quest.KEY.POSSIBLE);
-		FindTransform("Conditions/ToggleNew", out questTransform);
+		FindChilled("Conditions/ToggleNew", out questTransform);
 		if (!IsToggleOn(questTransform)) outQuest.SetKey(Quest.KEY.NO_NEW);
-		FindTransform("Conditions/ToggleClear", out questTransform);
+		FindChilled("Conditions/ToggleClear", out questTransform);
 		if (IsToggleOn(questTransform)) outQuest.SetKey(Quest.KEY.CLEAR);
 	}
 
 	//子オブジェクトの取得(検索)
-	void FindTransform(in string name, out Transform findTransform)
+	void FindChilled(in string name, out Transform findTransform)
 	{
 		findTransform = settingObject.transform.Find(name);
 	}

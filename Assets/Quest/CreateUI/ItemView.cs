@@ -20,7 +20,7 @@ public class ItemView : MonoBehaviour
 	//作成
 	public void Creat(Quest quest)
 	{
-		m_bOpen = false;
+		m_bOpen = true;
 		Initialize(quest);
 	}
 
@@ -28,6 +28,8 @@ public class ItemView : MonoBehaviour
 	public void Initialize(Quest quest)
 	{
 		m_quest = quest;
+
+		Debug.Log(quest.IsKey(Quest.KEY.POSSIBLE));
 
 		SetQuestDatas();
 		BackScaleChange();
@@ -38,12 +40,24 @@ public class ItemView : MonoBehaviour
 	void SetQuestDatas()
 	{
 		//クエスト名
-		string questName = m_quest.GetQuest().name;
-		gameObject.name = questName;
-		Transform name = transform.GetChild(0);
-		name.transform.GetComponent<TextMeshProUGUI>().text = questName;
+		string strWork = m_quest.GetQuest().name;
+		gameObject.name = strWork;
+		Transform traWork = FindChildTra("Name");
+		traWork.GetComponent<TextMeshProUGUI>().text = strWork;
 
+		strWork = m_quest.GetQuest().detail;
+		traWork = FindChildTra("Explanation");
+		traWork.GetComponent<TextMeshProUGUI>().text = strWork;
 
+		foreach (Transform child in FindChildTra("Conditions"))
+			child.Find("Checkmark").GetComponent<Image>().color = Color.clear;
+
+		traWork = FindChildTra("Conditions/Appearance/Checkmark");
+		if (m_quest.IsKey(Quest.KEY.POSSIBLE)) traWork.GetComponent<Image>().color = Color.white;
+		traWork = FindChildTra("Conditions/New/Checkmark");
+		if (!m_quest.IsKey(Quest.KEY.NO_NEW)) traWork.GetComponent<Image>().color = Color.white;
+		traWork = FindChildTra("Conditions/Clear/Checkmark");
+		if (m_quest.IsKey(Quest.KEY.CLEAR)) traWork.GetComponent<Image>().color = Color.white;
 	}
 
 	void Start()
@@ -52,29 +66,18 @@ public class ItemView : MonoBehaviour
 		for (int i = 0; i < transform.childCount; i++)
 		{
 			GameObject item = transform.GetChild(i).gameObject;
-			item.transform.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+			Vector2 pos = item.transform.GetComponent<RectTransform>().anchoredPosition;
+			pos.x = 0.0f;
+			item.transform.GetComponent<RectTransform>().anchoredPosition = pos;
 		}
 		FoldoutChanges();
-	}
-
-	void Update()
-	{		
-		//if (!IsFoldoutOpen()) return;
-
-
-	}
-
-	//子オブジェクトの取得(検索)
-	void FindTransform(in string name, out Transform findTransform)
-	{
-		findTransform = settingObject.transform.Find(name);
 	}
 
 	//Foldoutの表示変更
 	void FoldoutChanges()
 	{
 		//子オブジェクトの取得(インデックス[上から])
-		Transform parentFoldout = transform.Find("Foldouts");
+		Transform parentFoldout = FindChildTra("Foldouts");
 
 		for (int i = 0; i < parentFoldout.childCount; i++)
 		{
@@ -87,16 +90,16 @@ public class ItemView : MonoBehaviour
 	public void SetHighlightAnimation(in bool bAnimation)
 	{
 		//Highlightを消す
-		Animator anime = transform.Find("Highlight").GetComponent<Animator>();
+		Animator anime = FindChildTra("Highlight").GetComponent<Animator>();
 		anime.SetBool("bHighlight", bAnimation);
 	}
 
-	//Itemの表示サイズを変更
+	//背景の表示サイズを変更
 	void BackScaleChange()
 	{
 		//背景の縦サイズ変更
 		RectTransform rectTra = GetComponent<RectTransform>();
-		RectTransform effectRectTra = transform.Find("Highlight").GetComponent<RectTransform>();
+		RectTransform effectRectTra = FindChildTra("Highlight").GetComponent<RectTransform>();
 		float y = (m_bOpen ? m_openSize : m_closeSize);
 
 		Vector2 scale = rectTra.sizeDelta;
@@ -121,5 +124,11 @@ public class ItemView : MonoBehaviour
 		float operatorY = (m_bOpen) ? m_openSize : m_closeSize;
 		float objectY = transform.GetComponent<RectTransform>().sizeDelta.y;
 		return objectY == operatorY;
+	}
+
+	//子オブジェクトの取得(検索)
+	Transform FindChildTra(in string name)
+	{
+		return transform.Find(name);
 	}
 }
