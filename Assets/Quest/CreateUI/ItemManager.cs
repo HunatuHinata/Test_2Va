@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -65,20 +66,37 @@ public class ItemManager : MonoBehaviour
 
 	void ItemSelect()
 	{
-		if (Input.GetMouseButton(0))
+		PointerEventData ped = new PointerEventData(EventSystem.current);
+		ped.position = Input.mousePosition;
+		List<RaycastResult> result = new List<RaycastResult>();
+		EventSystem.current.RaycastAll(ped, result);
+
+		if (result.Any(o => o.gameObject.CompareTag("")))
 		{
-			// TryCatch文でNull回避
-			try
+
+		}
+
+			if (result.Any(o => o.gameObject.CompareTag("ItemUI")))
+		{
+
+			return;
+		}
+
+		// Rayで何もヒットしなかったら画面タッチイベント関数を呼ぶ
+		if (result.Count > 0 && result.Any(o => o.gameObject.CompareTag("Quest")))
+		{
+			Vector3 mousePoint = Input.mousePosition;
+			mousePoint = Camera.main.ScreenToWorldPoint(mousePoint);
+			RaycastHit2D[] hit2D = Physics2D.RaycastAll(mousePoint, Vector3.forward);
+			Debug.Log(hit2D.Length);
+			foreach (RaycastHit2D hit in hit2D)
 			{
-				GameObject hitObject = m_eventSystem.currentSelectedGameObject.gameObject;
-				Debug.Log(hitObject.name);
+				Debug.Log(hit.collider.transform.name);
 			}
-			// 例外処理的なやつ
-			catch (NullReferenceException ex)
-			{
-				// なにも選択されない場合に
-				m_selectObject = null;
-			}
+		}
+		else
+		{
+			
 		}
 	}
 

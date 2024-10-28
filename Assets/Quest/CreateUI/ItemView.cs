@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemView : MonoBehaviour
 {
@@ -16,12 +17,14 @@ public class ItemView : MonoBehaviour
 	Quest m_quest;
 	bool m_bOpen;
 
+	//作成
 	public void Creat(Quest quest)
 	{
 		m_bOpen = false;
 		Initialize(quest);
 	}
 
+	//初期化
 	public void Initialize(Quest quest)
 	{
 		m_quest = quest;
@@ -35,6 +38,7 @@ public class ItemView : MonoBehaviour
 		//子オブジェクトを取得
 		BackScaleChange();
 		ActiveObjectChanges();
+		SetHighlightAnimation(false);
 	}
 
 	void Start()
@@ -50,7 +54,7 @@ public class ItemView : MonoBehaviour
 
 	void Update()
 	{		
-		if (!m_bOpen) return;
+		//if (IsFoldoutOpen()) return;
 
 	}
 
@@ -58,7 +62,7 @@ public class ItemView : MonoBehaviour
 	void FoldoutChanges()
 	{
 		//子オブジェクトの取得(インデックス[上から])
-		Transform parentFoldout = transform.GetChild(1);
+		Transform parentFoldout = transform.Find("Foldouts");
 
 		for (int i = 0; i < parentFoldout.childCount; i++)
 		{
@@ -67,13 +71,20 @@ public class ItemView : MonoBehaviour
 		}
 	}
 
+	//Highlightのアニメーションをセット
+	public void SetHighlightAnimation(in bool bAnimation)
+	{
+		//Highlightを消す
+		Animator anime = transform.Find("Highlight").GetComponent<Animator>();
+		anime.SetBool("bHighlight", bAnimation);
+	}
+
 	//Itemの表示サイズを変更
 	void BackScaleChange()
 	{
 		//背景の縦サイズ変更
 		RectTransform rectTra = GetComponent<RectTransform>();
-		RectTransform effectRectTra = transform.Find("Effect").GetComponent<RectTransform>();
-
+		RectTransform effectRectTra = transform.Find("Highlight").GetComponent<RectTransform>();
 		float y = (m_bOpen ? m_openSize : m_closeSize);
 
 		Vector2 scale = rectTra.sizeDelta;
