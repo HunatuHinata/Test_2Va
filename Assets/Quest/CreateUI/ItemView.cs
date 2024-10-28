@@ -29,16 +29,21 @@ public class ItemView : MonoBehaviour
 	{
 		m_quest = quest;
 
+		SetQuestDatas();
+		BackScaleChange();
+		ActiveObjectChanges();
+		SetHighlightAnimation(false);
+	}
+
+	void SetQuestDatas()
+	{
 		//クエスト名
 		string questName = m_quest.GetQuest().name;
 		gameObject.name = questName;
 		Transform name = transform.GetChild(0);
 		name.transform.GetComponent<TextMeshProUGUI>().text = questName;
 
-		//子オブジェクトを取得
-		BackScaleChange();
-		ActiveObjectChanges();
-		SetHighlightAnimation(false);
+
 	}
 
 	void Start()
@@ -54,8 +59,15 @@ public class ItemView : MonoBehaviour
 
 	void Update()
 	{		
-		//if (IsFoldoutOpen()) return;
+		//if (!IsFoldoutOpen()) return;
 
+
+	}
+
+	//子オブジェクトの取得(検索)
+	void FindTransform(in string name, out Transform findTransform)
+	{
+		findTransform = settingObject.transform.Find(name);
 	}
 
 	//Foldoutの表示変更

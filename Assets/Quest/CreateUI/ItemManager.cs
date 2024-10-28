@@ -38,7 +38,8 @@ public class ItemManager : MonoBehaviour
 	void Update()
     {
 		ItemSearch();
-		ItemSelect();
+		if (Input.GetMouseButtonDown(0))
+			ItemSelect();
 	}
 
 	void ItemSearch()
@@ -70,17 +71,17 @@ public class ItemManager : MonoBehaviour
 		ped.position = Input.mousePosition;
 		List<RaycastResult> result = new List<RaycastResult>();
 		EventSystem.current.RaycastAll(ped, result);
-
-		if (result.Any(o => o.gameObject.CompareTag("")))
+		
+		if (!result.Any(o => o.gameObject.CompareTag("ItemUI")))
 		{
-
-		}
-
-			if (result.Any(o => o.gameObject.CompareTag("ItemUI")))
-		{
-
+			m_selectObject = null;
 			return;
 		}
+
+		RaycastResult itemObject = result.Find(o => o.gameObject.CompareTag("ItemUI"));
+
+		if (result.Any(o => o.gameObject.CompareTag("FoldoutUI"))) ;
+
 
 		// Rayで何もヒットしなかったら画面タッチイベント関数を呼ぶ
 		if (result.Count > 0 && result.Any(o => o.gameObject.CompareTag("Quest")))
