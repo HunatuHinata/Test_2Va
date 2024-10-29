@@ -18,26 +18,36 @@ public class ItemView : MonoBehaviour
 	bool m_bOpen;
 
 	//作成
-	public void Creat(Quest quest)
+	public void Creat(in Quest quest)
 	{
-		m_bOpen = true;
-		Initialize(quest);
+		m_bOpen = false;
+		m_quest = quest;
+
+		Initialize();
 	}
 
 	//初期化
-	public void Initialize(Quest quest)
+	public void Initialize()
 	{
-		m_quest = quest;
-
-		Debug.Log(quest.IsKey(Quest.KEY.POSSIBLE));
-
-		SetQuestDatas();
+		SetItemDatas();
 		BackScaleChange();
 		ActiveObjectChanges();
 		SetHighlightAnimation(false);
 	}
+	
+	//Itemの表示or非表示
+	public void ItemDisplaySwitching()
+	{
+		m_bOpen = !m_bOpen;
 
-	void SetQuestDatas()
+		FoldoutChanges();
+		BackScaleChange();
+		ActiveObjectChanges();
+		SetHighlightAnimation(true);
+	}
+
+	//テキスト・チェックマークのセット
+	void SetItemDatas()
 	{
 		//クエスト名
 		string strWork = m_quest.GetQuest().name;
@@ -73,10 +83,9 @@ public class ItemView : MonoBehaviour
 		FoldoutChanges();
 	}
 
-	//Foldoutの表示変更
+	//Foldoutの位置変更
 	void FoldoutChanges()
 	{
-		//子オブジェクトの取得(インデックス[上から])
 		Transform parentFoldout = FindChildTra("Foldouts");
 
 		for (int i = 0; i < parentFoldout.childCount; i++)
@@ -114,16 +123,7 @@ public class ItemView : MonoBehaviour
 	//HideObjectsの表示・非表示
 	void ActiveObjectChanges()
 	{
-		foreach (GameObject item in m_lstHideObjects)
-			item.SetActive(m_bOpen);
-	}
-
-	//Foldoutが開いているかどうか
-	bool IsFoldoutOpen()
-	{
-		float operatorY = (m_bOpen) ? m_openSize : m_closeSize;
-		float objectY = transform.GetComponent<RectTransform>().sizeDelta.y;
-		return objectY == operatorY;
+		foreach (GameObject item in m_lstHideObjects) item.SetActive(m_bOpen);
 	}
 
 	//子オブジェクトの取得(検索)

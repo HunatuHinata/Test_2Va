@@ -72,17 +72,22 @@ public class ItemManager : MonoBehaviour
 		List<RaycastResult> result = new List<RaycastResult>();
 		EventSystem.current.RaycastAll(ped, result);
 		
+		//ItemUIのタグがない場合
+		//前回の選択したItemのハイライトを消す
 		if (!result.Any(o => o.gameObject.CompareTag("ItemUI")))
 		{
-			//m_selectObject.transform.GetComponent<>();
+			m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(false);
 			m_selectObject = null;
 			return;
 		}
 
 		RaycastResult itemObject = result.Find(o => o.gameObject.CompareTag("ItemUI"));
 		m_selectObject = itemObject.gameObject;
-		//if (result.Any(o => o.gameObject.CompareTag("FoldoutUI"))) ;
 
+		//FoldoutUIのタグがある場合
+		//クエストの詳細を表示する
+		if (result.Any(o => o.gameObject.CompareTag("FoldoutUI"))) 
+			m_selectObject.transform.GetComponent<ItemView>().ItemDisplaySwitching();
 	}
 
 	public void OnQuestButton()
@@ -93,8 +98,15 @@ public class ItemManager : MonoBehaviour
 		//}
 	}
 
-	public void Delete()
+	public void EditButton()
+	{
+		Debug.Log("Coming Soon...");
+	}
+
+	public void DeleteButton()
 	{
 		//int result1 = list.FindIndex(n => n == "C");
+
+		Debug.Log("Coming Soon...");
 	}
 }
