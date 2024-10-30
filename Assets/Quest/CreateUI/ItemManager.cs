@@ -24,18 +24,23 @@ public class ItemManager : MonoBehaviour
 
     void Start()
     {
+		m_bAddMode = true;
 		m_selectObject = null;
 		m_itemCreat.SetQuestListRef(ref m_questSO);
 		m_search = string.Empty;
 		//m_searchObject.GetComponent<TextMeshProUGUI>().text = string.Empty;
 		m_searchObject.GetComponent<TMP_InputField>().text = string.Empty;
 		foreach (Quest quest in m_questSO.quests)
-		{
-			GameObject itemObject = GameObject.Instantiate(m_itemPrefab, m_parent.transform);
-			itemObject.GetComponent<ItemView>().Creat(quest);
-			m_items.Add(itemObject);
-		}
+			GeneratItem(quest);
 	}
+
+	//Itemを生成
+	void GeneratItem(Quest quest)
+	{
+        GameObject itemObject = GameObject.Instantiate(m_itemPrefab, m_parent.transform);
+        itemObject.GetComponent<ItemView>().Creat(quest);
+        m_items.Add(itemObject);
+    }
 
 	void Update()
     {
@@ -44,6 +49,7 @@ public class ItemManager : MonoBehaviour
 			ItemSelect();
 	}
 
+	//Itemを検索
 	void ItemSearch()
 	{
 #if false //TextMeshProUGUIでの作成方法（こっちめんどくさい）
@@ -67,18 +73,19 @@ public class ItemManager : MonoBehaviour
 		foreach (GameObject item in items) item.SetActive(false);
 	}
 
+	//Itemを選択
 	void ItemSelect()
 	{
 		PointerEventData ped = new PointerEventData(EventSystem.current);
 		ped.position = Input.mousePosition;
 		List<RaycastResult> result = new List<RaycastResult>();
 		EventSystem.current.RaycastAll(ped, result);
-		
-		//ItemUIのタグがない場合
-		//前回の選択したItemのハイライトを消す
-		if (!result.Any(o => o.gameObject.CompareTag("ItemUI")))
+
+        //ItemUIのタグがない場合
+        //前回の選択したItemのハイライトを消す
+		m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(false);
+        if (!result.Any(o => o.gameObject.CompareTag("ItemUI")))
 		{
-			m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(false);
 			m_selectObject = null;
 			return;
 		}
@@ -86,18 +93,22 @@ public class ItemManager : MonoBehaviour
 		RaycastResult itemObject = result.Find(o => o.gameObject.CompareTag("ItemUI"));
 		m_selectObject = itemObject.gameObject;
 
-		//FoldoutUIのタグがある場合
-		//クエストの詳細を表示する
-		if (result.Any(o => o.gameObject.CompareTag("FoldoutUI"))) 
+		m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(true);
+
+        //FoldoutUIのタグがある場合
+        //クエストの詳細を表示する
+        if (result.Any(o => o.gameObject.CompareTag("FoldoutUI"))) 
 			m_selectObject.transform.GetComponent<ItemView>().ItemDisplaySwitching();
 	}
 
+	//クエストボタン
 	public void OnQuestButton()
 	{
-		//if ()
-		//{
-		//	m_itemCreat.AddQuest();
-		//}
+		if (m_bAddMode)
+		{
+			m_itemCreat.AddQuest();
+			GeneratItem();
+		}
 	}
 
 	public void EditButton()

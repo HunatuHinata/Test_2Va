@@ -34,7 +34,7 @@ public class ItemView : MonoBehaviour
 		ActiveObjectChanges();
 		SetHighlightAnimation(false);
 	}
-	
+
 	//Itemの表示or非表示
 	public void ItemDisplaySwitching()
 	{
@@ -43,7 +43,6 @@ public class ItemView : MonoBehaviour
 		FoldoutChanges();
 		BackScaleChange();
 		ActiveObjectChanges();
-		SetHighlightAnimation(true);
 	}
 
 	//テキスト・チェックマークのセット

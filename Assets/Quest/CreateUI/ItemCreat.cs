@@ -9,26 +9,30 @@ public class ItemCreat
 
 	QuestSO m_questSO;
 
+	//QuestSOをセット
 	public void SetQuestListRef(ref QuestSO questSO)
 	{
 		m_questSO = questSO;
 	}
 
+	//追加
 	public void AddQuest()
 	{
 		Quest quest;
-		InputQuest(out quest);
+		ExportQuest(out quest);
 		m_questSO.quests.Add(quest);
 	}
 
+	//編集
 	public void ReplacementQuest(ref Quest refQuest)
 	{
 		Quest quest;
-		InputQuest(out quest);
+		ExportQuest(out quest);
 		refQuest = quest;
 	}
 
-	void InputQuest(out Quest outQuest)
+	//入力内容をを出力
+	void ExportQuest(out Quest outQuest)
 	{
 		outQuest = new Quest();
 		Transform questTransform;
