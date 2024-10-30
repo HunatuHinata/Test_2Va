@@ -18,7 +18,9 @@ public class ItemManager : MonoBehaviour
 
 	List<GameObject> m_items = new List<GameObject>();
 	GameObject m_selectObject;
+	GameObject m_targetObject;
 	string m_search;
+	bool m_bAddMode;
 
     void Start()
     {
