@@ -16,52 +16,59 @@ public class ItemCreat
 	}
 
 	//追加
-	public void AddQuest()
+	public Quest AddItem()
 	{
-		Quest quest;
-		ExportQuest(out quest);
+		Quest quest = null;
+		quest = InputContentAcquisition();
+
+		if (quest.GetQuest().name == string.Empty || quest.GetQuest().detail == string.Empty) return null;
+
 		m_questSO.quests.Add(quest);
+		return quest;
 	}
 
 	//編集
-	public void ReplacementQuest(ref Quest refQuest)
+	public void EditItem(ref Quest refQuest)
 	{
 		Quest quest;
-		ExportQuest(out quest);
+		quest = InputContentAcquisition();
 		refQuest = quest;
 	}
 
-	//入力内容をを出力
-	void ExportQuest(out Quest outQuest)
+	//入力内容を出す
+	Quest InputContentAcquisition()
 	{
-		outQuest = new Quest();
-		Transform questTransform;
+		Quest workQuest = new Quest();
+		Transform workTransform;
 		string name, explanation;
 
 		//名前＆説明
-		FindChilled("QuestName/Input", out questTransform);
-		name = questTransform.GetComponent<TMP_InputField>().text;
-		FindChilled("QuestExplanation/Input", out questTransform);
-		explanation = questTransform.GetComponent<TMP_InputField>().text;
-		outQuest.SetQuest(name, explanation);
+		workTransform = FindChildTransform("QuestName/Input");
+		name = workTransform.GetComponent<TMP_InputField>().text;
+		workTransform = FindChildTransform("QuestExplanation/Input");
+		explanation = workTransform.GetComponent<TMP_InputField>().text;
+		workQuest.SetQuest(name, explanation);
+
 		//状態
-		FindChilled("Conditions/ToggleAppearance", out questTransform);
-		if (IsToggleOn(questTransform)) outQuest.SetKey(Quest.KEY.POSSIBLE);
-		FindChilled("Conditions/ToggleNew", out questTransform);
-		if (!IsToggleOn(questTransform)) outQuest.SetKey(Quest.KEY.NO_NEW);
-		FindChilled("Conditions/ToggleClear", out questTransform);
-		if (IsToggleOn(questTransform)) outQuest.SetKey(Quest.KEY.CLEAR);
+		workTransform = FindChildTransform("Conditions/ToggleAppearance");
+		if (IsToggleOn(workTransform)) workQuest.SetKey(Quest.KEY.POSSIBLE);
+		workTransform = FindChildTransform("Conditions/ToggleNew");
+		if (!IsToggleOn(workTransform)) workQuest.SetKey(Quest.KEY.NO_NEW);
+		workTransform = FindChildTransform("Conditions/ToggleClear");
+		if (IsToggleOn(workTransform)) workQuest.SetKey(Quest.KEY.CLEAR);
+
+		return workQuest;
 	}
 
-	//子オブジェクトの取得(検索)
-	void FindChilled(in string name, out Transform findTransform)
+	//子オブジェクトの検索
+	Transform FindChildTransform(in string findName)
 	{
-		findTransform = settingObject.transform.Find(name);
+		return settingObject.transform.Find(findName);
 	}
 
 	//Toggleコンポーネントのチェックの取得
-	bool IsToggleOn(in Transform questTransform)
+	bool IsToggleOn(in Transform targetTransform)
 	{
-		return questTransform.GetComponent<Toggle>().isOn;
+		return targetTransform.GetComponent<Toggle>().isOn;
 	}
 }

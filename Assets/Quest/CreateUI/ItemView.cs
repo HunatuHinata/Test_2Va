@@ -18,9 +18,9 @@ public class ItemView : MonoBehaviour
 	bool m_bOpen;
 
 	//çÏê¨
-	public void Creat(in Quest quest)
+	public void Creat(in Quest quest, in bool bOpen = false)
 	{
-		m_bOpen = false;
+		m_bOpen = bOpen;
 		m_quest = quest;
 
 		Initialize();

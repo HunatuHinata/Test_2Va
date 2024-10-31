@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ItemUI
   - FoldoutUI
+  - NoSelect
   layers:
   - Default
   - TransparentFX

@@ -14,18 +14,21 @@ public class ItemManager : MonoBehaviour
 	[SerializeField] GameObject m_itemPrefab;
 	[SerializeField] GameObject m_parent;
 	[SerializeField] ItemCreat m_itemCreat;
-	[SerializeField] EventSystem m_eventSystem;
+	[SerializeField] ItemConfirmation m_itemConfirmation;
 
 	List<GameObject> m_items = new List<GameObject>();
 	GameObject m_selectObject;
 	GameObject m_targetObject;
 	string m_search;
 	bool m_bAddMode;
+	Action m_function;
 
-    void Start()
+	void Start()
     {
 		m_bAddMode = true;
+		m_function = null;
 		m_selectObject = null;
+		m_targetObject = null;
 		m_itemCreat.SetQuestListRef(ref m_questSO);
 		m_search = string.Empty;
 		//m_searchObject.GetComponent<TextMeshProUGUI>().text = string.Empty;
@@ -34,20 +37,21 @@ public class ItemManager : MonoBehaviour
 			GeneratItem(quest);
 	}
 
-	//Itemを生成
+	void Update()
+    {
+		ItemSearch();
+
+		if (Input.GetMouseButtonDown(0)) 
+			ItemSelect();
+	}
+
+	//Itemの生成
 	void GeneratItem(Quest quest)
 	{
         GameObject itemObject = GameObject.Instantiate(m_itemPrefab, m_parent.transform);
         itemObject.GetComponent<ItemView>().Creat(quest);
         m_items.Add(itemObject);
     }
-
-	void Update()
-    {
-		ItemSearch();
-		if (Input.GetMouseButtonDown(0))
-			ItemSelect();
-	}
 
 	//Itemを検索
 	void ItemSearch()
@@ -81,15 +85,17 @@ public class ItemManager : MonoBehaviour
 		List<RaycastResult> result = new List<RaycastResult>();
 		EventSystem.current.RaycastAll(ped, result);
 
-        //ItemUIのタグがない場合
-        //前回の選択したItemのハイライトを消す
+		if (result.Any(o => o.gameObject.CompareTag("NoSelect"))) return;
+
+		//ItemUIのタグがない場合
+		//前回の選択したItemのハイライトを消す
 		m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(false);
         if (!result.Any(o => o.gameObject.CompareTag("ItemUI")))
 		{
 			m_selectObject = null;
 			return;
 		}
-
+		
 		RaycastResult itemObject = result.Find(o => o.gameObject.CompareTag("ItemUI"));
 		m_selectObject = itemObject.gameObject;
 
@@ -101,25 +107,44 @@ public class ItemManager : MonoBehaviour
 			m_selectObject.transform.GetComponent<ItemView>().ItemDisplaySwitching();
 	}
 
-	//クエストボタン
-	public void OnQuestButton()
+	//ボタン
+	public void SelectButton(bool bSelect)
+	{
+		m_itemConfirmation.HideConfirmationWindow();
+
+		if (!bSelect) return;
+	}
+
+	//追加or編集ボタン
+	public void AddOrCompletedButton()
 	{
 		if (m_bAddMode)
 		{
-			m_itemCreat.AddQuest();
-			GeneratItem();
+			Quest work = m_itemCreat.AddItem();
+			if (work == null)
+			{
+				m_itemConfirmation.SetDisplayContent(MESSAGE.INPUT_NULL);
+				return;
+			}
+			//itemの追加
+			GeneratItem(work);
 		}
 	}
 
+	//編集ボタン
 	public void EditButton()
 	{
-		Debug.Log("Coming Soon...");
+		if (!m_selectObject) return;
+
 	}
 
+	//削除ボタン
 	public void DeleteButton()
 	{
-		//int result1 = list.FindIndex(n => n == "C");
+		if (!m_selectObject) return;
 
-		Debug.Log("Coming Soon...");
+		int result = m_questSO.quests.FindIndex(n => n.GetQuest().name == m_selectObject.name);
+		
+		m_itemConfirmation.SetDisplayContent(MESSAGE.DELETING_CONFIRMATION);
 	}
 }
