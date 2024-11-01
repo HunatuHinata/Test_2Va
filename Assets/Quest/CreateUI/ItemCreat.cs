@@ -7,36 +7,19 @@ public class ItemCreat
 {
 	[SerializeField] GameObject settingObject;
 
-	QuestSO m_questSO;
-
-	//QuestSOをセット
-	public void SetQuestListRef(ref QuestSO questSO)
-	{
-		m_questSO = questSO;
-	}
-
-	//追加
-	public Quest AddItem()
+	//取得
+	public Quest GetItem()
 	{
 		Quest quest = null;
-		quest = InputContentAcquisition();
+		quest = GetInputContentAcquisition();
 
 		if (quest.GetQuest().name == string.Empty || quest.GetQuest().detail == string.Empty) return null;
 
-		m_questSO.quests.Add(quest);
 		return quest;
 	}
 
-	//編集
-	public void EditItem(ref Quest refQuest)
-	{
-		Quest quest;
-		quest = InputContentAcquisition();
-		refQuest = quest;
-	}
-
 	//入力内容を出す
-	Quest InputContentAcquisition()
+	Quest GetInputContentAcquisition()
 	{
 		Quest workQuest = new Quest();
 		Transform workTransform;
@@ -58,6 +41,26 @@ public class ItemCreat
 		if (IsToggleOn(workTransform)) workQuest.SetKey(Quest.KEY.CLEAR);
 
 		return workQuest;
+	}
+
+	//内容をセット
+	public void SetContents(in Quest quest)
+	{
+		Transform workTransform;
+
+		//名前＆説明
+		workTransform = FindChildTransform("QuestName/Input");
+		workTransform.GetComponent<TMP_InputField>().text = quest.GetQuest().name;
+		workTransform = FindChildTransform("QuestExplanation/Input");
+		workTransform.GetComponent<TMP_InputField>().text = quest.GetQuest().detail;
+
+		//状態
+		workTransform = FindChildTransform("Conditions/ToggleAppearance");
+		workTransform.GetComponent<Toggle>().isOn = quest.IsKey(Quest.KEY.POSSIBLE);
+		workTransform = FindChildTransform("Conditions/ToggleNew");
+		workTransform.GetComponent<Toggle>().isOn = !quest.IsKey(Quest.KEY.NO_NEW);
+		workTransform = FindChildTransform("Conditions/ToggleClear");
+		workTransform.GetComponent<Toggle>().isOn = quest.IsKey(Quest.KEY.CLEAR);
 	}
 
 	//子オブジェクトの検索

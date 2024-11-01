@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +16,7 @@ public class ItemConfirmation
 	[SerializeField] GameObject m_itemPrefub;
 	[SerializeField] Vector3 m_scaleItem;
 	[SerializeField] Vector2 m_offsetParentItems;
-	[SerializeField] Vector2 m_offsetItem;
+	[SerializeField] Vector2[] m_offsetItem;
 	[SerializeField] Vector2[] m_offsetMessage;
 	[SerializeField] Vector2[] m_offsetButton;
 	[SerializeField] string[] m_messages;
@@ -26,87 +25,58 @@ public class ItemConfirmation
 	public void SetDisplayContent(in MESSAGE message, in Quest before = null, in Quest after = null)
 	{
 		HideChilds();
-		switch (message)
-		{
-			case MESSAGE.INPUT_NULL:
-				WarningAtEntry();
-				break;
-			case MESSAGE.DELETING_CONFIRMATION:
-				DeletingConfirmation(before);
-				break;
-			case MESSAGE.CHANGING_CONFIRMATION:
-				break;
-		}
+
+		int num = (int)message;
+		if (before != null) SettingArrow();
+		SettingItems(num, before, after);
+		SettingMessage(num);
+		//beforが無ければボタンを一つにする
+		SettingButtons((num == 0), num);
+
 		m_confirmation.gameObject.SetActive(true);
 	}
 
-	//警告メッセージ
-	void WarningAtEntry()
+	void SettingArrow()
 	{
-		int num = (int)MESSAGE.INPUT_NULL;
-		TextMeshProUGUI messageUGUI = GetChildComponent<TextMeshProUGUI>("Message(TMP)");
-		messageUGUI.text = m_messages[num];
-		messageUGUI.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetMessage[num];
-		messageUGUI.gameObject.SetActive(true);
-
-		Button ok_Button = GetChildComponent<Button>("Buttons/OK");
-		ok_Button.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetButton[num];
-		ok_Button.gameObject.SetActive(true);
+		GameObject arrow = GetChildComponent<Transform>("Arrow").gameObject;
+		arrow.GetComponent<RectTransform>().anchoredPosition = m_offsetParentItems;
+		arrow.SetActive(true);
 	}
 
-	//変更確認
-	void ChangingConfirmation(in Quest before, in Quest after)
+	//Itemの設定
+	void SettingItems(in int num, in Quest before, in Quest after)
 	{
-		int num = (int)MESSAGE.CHANGING_CONFIRMATION;
-
-		//矢印
-		GetChildComponent<GameObject>("Arrow").SetActive(true);
-
+		if (before == null) return;
 		GetChildComponent<RectTransform>("Items").anchoredPosition = m_offsetParentItems;
 		GameObject deleteItem = GameObject.Instantiate(m_itemPrefub, GetChildComponent<Transform>("Items"));
-		deleteItem.GetComponent<RectTransform>().anchoredPosition = m_offsetItem;
+		deleteItem.GetComponent<RectTransform>().anchoredPosition = m_offsetItem[num];
 		deleteItem.GetComponent<RectTransform>().localScale = m_scaleItem;
 		deleteItem.GetComponent<ItemView>().Creat(before, true);
+
+		if (after == null) return;
 		GameObject replacementItem = GameObject.Instantiate(m_itemPrefub, GetChildComponent<Transform>("Items"));
-		replacementItem.GetComponent<RectTransform>().anchoredPosition = -m_offsetItem;
+		replacementItem.GetComponent<RectTransform>().anchoredPosition = -m_offsetItem[num];
 		replacementItem.GetComponent<RectTransform>().localScale = m_scaleItem;
-		replacementItem.GetComponent<ItemView>().Creat(before, true);
-
-		TextMeshProUGUI messageUGUI = GetChildComponent<TextMeshProUGUI>("Message(TMP)");
-		messageUGUI.text = m_messages[num];
-		messageUGUI.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetMessage[num];
-		messageUGUI.gameObject.SetActive(true);
-
-		Button ok_Button = GetChildComponent<Button>("Buttons/OK");
-		ok_Button.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetButton[num];
-		ok_Button.gameObject.SetActive(true);
-		Button no_Button = GetChildComponent<Button>("Buttons/NO");
-		no_Button.transform.GetComponent<RectTransform>().anchoredPosition = -m_offsetButton[num];
-		no_Button.gameObject.SetActive(true);
+		replacementItem.GetComponent<ItemView>().Creat(after, true);
 	}
 
-	//削除確認
-	void DeletingConfirmation(in Quest quest)
+	//テキストの設定
+	void SettingMessage(in int num)
 	{
-		int num = (int)MESSAGE.DELETING_CONFIRMATION;
-
-		//Itemオブジェクト
-		GetChildComponent<RectTransform>("Items").anchoredPosition = m_offsetParentItems;
-		GameObject deleteItem = GameObject.Instantiate(m_itemPrefub, GetChildComponent<Transform>("Items"));
-		deleteItem.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-		deleteItem.GetComponent<RectTransform>().localScale = m_scaleItem;
-		deleteItem.GetComponent<ItemView>().Creat(quest, true);
-
-		//メッセージ
 		TextMeshProUGUI messageUGUI = GetChildComponent<TextMeshProUGUI>("Message(TMP)");
 		messageUGUI.text = m_messages[num];
 		messageUGUI.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetMessage[num];
 		messageUGUI.gameObject.SetActive(true);
+	}
 
-		//ボタン
+	//ボタン設定
+	void SettingButtons(in bool bOnly, in int num)
+	{
 		Button ok_Button = GetChildComponent<Button>("Buttons/OK");
 		ok_Button.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetButton[num];
 		ok_Button.gameObject.SetActive(true);
+
+		if (bOnly) return;
 		Button no_Button = GetChildComponent<Button>("Buttons/NO");
 		no_Button.transform.GetComponent<RectTransform>().anchoredPosition = -m_offsetButton[num];
 		no_Button.gameObject.SetActive(true);
@@ -124,9 +94,9 @@ public class ItemConfirmation
 			child.gameObject.SetActive(false);
 
 		//Itemsの子オブジェクトを削除
-		if (GetChildComponent<Transform>("Items").childCount == 0) return;
+		if (GetChildComponent<Transform>("Items").childCount == 1) return;
 
-		foreach (Transform item in GetChildComponent<Transform>("Items"))
+		foreach (Transform item in GetChildComponent<Transform>("Items")) 
 			GameObject.Destroy(item.gameObject);
 	}
 

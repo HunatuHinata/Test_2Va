@@ -11,6 +11,7 @@ public class ItemView : MonoBehaviour
 	[SerializeField] float m_openSize;
 
 	[SerializeField] Vector2[] m_openFoldouts = new Vector2[2];
+	[SerializeField] Color m_highlightColor;
 
 	[SerializeField] List<GameObject> m_lstHideObjects = new List<GameObject>();
 
@@ -94,13 +95,16 @@ public class ItemView : MonoBehaviour
 		}
 	}
 
-	//Highlightのアニメーションをセット
-	public void SetHighlightAnimation(in bool bAnimation)
+	//ハイライトのアニメーションをセット
+	public void SetHighlightAnimation(in bool bAnimation, in bool bTarget = false)
 	{
 		if (!gameObject.activeInHierarchy) return;
 
-		//Highlightを消す
-		Animator anime = FindChildTra("Highlight").GetComponent<Animator>();
+		Transform highlight = FindChildTra("Highlight");
+		highlight.GetComponent<Image>().color = (bTarget ? Color.yellow : m_highlightColor);
+
+		//ハイライト
+		Animator anime = highlight.GetComponent<Animator>();
 		anime.SetBool("bHighlight", bAnimation);
 	}
 
