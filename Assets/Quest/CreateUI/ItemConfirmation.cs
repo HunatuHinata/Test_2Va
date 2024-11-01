@@ -1,6 +1,6 @@
 using System;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public enum MESSAGE
@@ -14,14 +14,16 @@ public enum MESSAGE
 public class ItemConfirmation
 {
 	[SerializeField] GameObject m_confirmation;
-	[SerializeField] Vector2 m_offsetDeleteItem;
-	[SerializeField] Vector2 m_offsetReplacementItem;
+	[SerializeField] GameObject m_itemPrefub;
+	[SerializeField] Vector3 m_scaleItem;
+	[SerializeField] Vector2 m_offsetParentItems;
+	[SerializeField] Vector2 m_offsetItem;
 	[SerializeField] Vector2[] m_offsetMessage;
 	[SerializeField] Vector2[] m_offsetButton;
 	[SerializeField] string[] m_messages;
 
 	//表示内容のセット
-	public void SetDisplayContent(in MESSAGE message)
+	public void SetDisplayContent(in MESSAGE message, in Quest before = null, in Quest after = null)
 	{
 		HideChilds();
 		switch (message)
@@ -30,6 +32,7 @@ public class ItemConfirmation
 				WarningAtEntry();
 				break;
 			case MESSAGE.DELETING_CONFIRMATION:
+				DeletingConfirmation(before);
 				break;
 			case MESSAGE.CHANGING_CONFIRMATION:
 				break;
@@ -52,11 +55,22 @@ public class ItemConfirmation
 	}
 
 	//変更確認
-	void ChangingConfirmation()
+	void ChangingConfirmation(in Quest before, in Quest after)
 	{
 		int num = (int)MESSAGE.CHANGING_CONFIRMATION;
 
-		GameObject deleteItem = GetChildComponent<GameObject>("Items/DeleteItem");
+		//矢印
+		GetChildComponent<GameObject>("Arrow").SetActive(true);
+
+		GetChildComponent<RectTransform>("Items").anchoredPosition = m_offsetParentItems;
+		GameObject deleteItem = GameObject.Instantiate(m_itemPrefub, GetChildComponent<Transform>("Items"));
+		deleteItem.GetComponent<RectTransform>().anchoredPosition = m_offsetItem;
+		deleteItem.GetComponent<RectTransform>().localScale = m_scaleItem;
+		deleteItem.GetComponent<ItemView>().Creat(before, true);
+		GameObject replacementItem = GameObject.Instantiate(m_itemPrefub, GetChildComponent<Transform>("Items"));
+		replacementItem.GetComponent<RectTransform>().anchoredPosition = -m_offsetItem;
+		replacementItem.GetComponent<RectTransform>().localScale = m_scaleItem;
+		replacementItem.GetComponent<ItemView>().Creat(before, true);
 
 		TextMeshProUGUI messageUGUI = GetChildComponent<TextMeshProUGUI>("Message(TMP)");
 		messageUGUI.text = m_messages[num];
@@ -72,18 +86,24 @@ public class ItemConfirmation
 	}
 
 	//削除確認
-	void DeletingConfirmation()
+	void DeletingConfirmation(in Quest quest)
 	{
 		int num = (int)MESSAGE.DELETING_CONFIRMATION;
 
-		GameObject deleteItem = GetChildComponent<GameObject>("Items/DeleteItem");
-		deleteItem.SetActive(true);
+		//Itemオブジェクト
+		GetChildComponent<RectTransform>("Items").anchoredPosition = m_offsetParentItems;
+		GameObject deleteItem = GameObject.Instantiate(m_itemPrefub, GetChildComponent<Transform>("Items"));
+		deleteItem.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+		deleteItem.GetComponent<RectTransform>().localScale = m_scaleItem;
+		deleteItem.GetComponent<ItemView>().Creat(quest, true);
 
+		//メッセージ
 		TextMeshProUGUI messageUGUI = GetChildComponent<TextMeshProUGUI>("Message(TMP)");
 		messageUGUI.text = m_messages[num];
 		messageUGUI.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetMessage[num];
 		messageUGUI.gameObject.SetActive(true);
 
+		//ボタン
 		Button ok_Button = GetChildComponent<Button>("Buttons/OK");
 		ok_Button.transform.GetComponent<RectTransform>().anchoredPosition = m_offsetButton[num];
 		ok_Button.gameObject.SetActive(true);
@@ -95,19 +115,26 @@ public class ItemConfirmation
 	//子オブジェクトを非表示
 	void HideChilds()
 	{
-		foreach (Transform child in m_confirmation.transform)
-			child.gameObject.SetActive(false);
+		//非表示対象
+		GetChildComponent<Transform>("Arrow").gameObject.SetActive(false);
+		GetChildComponent<Transform>("Message(TMP)").gameObject.SetActive(false);
+
+		//ボタンの子オブジェクト
 		foreach (Transform child in GetChildComponent<Transform>("Buttons"))
 			child.gameObject.SetActive(false);
 
-		//buttonsオブジェクトは対象外
-		Transform buttons = GetChildComponent<Transform>("Buttons");
-		buttons.gameObject.SetActive(true);
+		//Itemsの子オブジェクトを削除
+		if (GetChildComponent<Transform>("Items").childCount == 0) return;
+
+		foreach (Transform item in GetChildComponent<Transform>("Items"))
+			GameObject.Destroy(item.gameObject);
 	}
 
 	//確認画面の非表示
 	public void HideConfirmationWindow()
 	{
+		HideChilds();
+
 		m_confirmation.gameObject.SetActive(false);
 	}
 

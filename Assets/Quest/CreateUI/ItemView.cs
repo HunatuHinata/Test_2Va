@@ -97,6 +97,8 @@ public class ItemView : MonoBehaviour
 	//Highlightのアニメーションをセット
 	public void SetHighlightAnimation(in bool bAnimation)
 	{
+		if (!gameObject.activeInHierarchy) return;
+
 		//Highlightを消す
 		Animator anime = FindChildTra("Highlight").GetComponent<Animator>();
 		anime.SetBool("bHighlight", bAnimation);
