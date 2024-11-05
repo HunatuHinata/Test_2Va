@@ -27,7 +27,7 @@ public class ItemConfirmation
 		HideChilds();
 
 		int num = (int)message;
-		if (before != null) SettingArrow();
+		if (after != null) SettingArrow();
 		SettingItems(num, before, after);
 		SettingMessage(num);
 		//befor‚ª–³‚¯‚ê‚Îƒ{ƒ^ƒ“‚ðˆê‚Â‚É‚·‚é

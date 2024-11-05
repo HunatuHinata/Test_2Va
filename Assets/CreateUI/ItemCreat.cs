@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [System.Serializable]
 public class ItemCreat
 {
-	[SerializeField] GameObject settingObject;
+	[SerializeField] GameObject m_settingObject;
 
 	//取得
 	public Quest GetItem()
@@ -16,6 +16,26 @@ public class ItemCreat
 		if (quest.GetQuest().name == string.Empty || quest.GetQuest().detail == string.Empty) return null;
 
 		return quest;
+	}
+
+	//入力Itemをリセット
+	public void ResetsInputItem()
+	{
+		Transform workTransform;
+
+		//名前＆説明
+		workTransform = FindChildTransform("QuestName/Input");
+		workTransform.GetComponent<TMP_InputField>().text = "";
+		workTransform = FindChildTransform("QuestExplanation/Input");
+		workTransform.GetComponent<TMP_InputField>().text = "";
+
+		//状態
+		workTransform = FindChildTransform("Conditions/ToggleAppearance");
+		workTransform.GetComponent<Toggle>().isOn = false;
+		workTransform = FindChildTransform("Conditions/ToggleNew");
+		workTransform.GetComponent<Toggle>().isOn = true;
+		workTransform = FindChildTransform("Conditions/ToggleClear");
+		workTransform.GetComponent<Toggle>().isOn = false;
 	}
 
 	//入力内容を出す
@@ -66,7 +86,7 @@ public class ItemCreat
 	//子オブジェクトの検索
 	Transform FindChildTransform(in string findName)
 	{
-		return settingObject.transform.Find(findName);
+		return m_settingObject.transform.Find(findName);
 	}
 
 	//Toggleコンポーネントのチェックの取得

@@ -135,7 +135,9 @@ public class ItemManager : MonoBehaviour
 
 		//ItemUIのタグがない場合
 		//前回の選択したItemのハイライトを消す
-		m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(false);
+		if (m_targetObject != m_selectObject)
+			m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(false);
+
         if (!result.Any(o => o.gameObject.CompareTag("ItemUI")))
 		{
 			m_selectObject = null;
@@ -145,7 +147,8 @@ public class ItemManager : MonoBehaviour
 			RaycastResult itemObject = result.Find(o => o.gameObject.CompareTag("ItemUI"));
 			m_selectObject = itemObject.gameObject;
 
-			m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(true);
+			if (m_targetObject != m_selectObject)
+				m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(true);
 
 			//FoldoutUIのタグがある場合
 			//クエストの詳細を表示する
@@ -210,11 +213,17 @@ public class ItemManager : MonoBehaviour
 			AfterAction = (bool bCheck) => {
 				if (bCheck)
 				{
+					int itemNum = m_questSO.quests.FindIndex(n => n.GetQuest().name == m_targetObject.name);
+					Quest input = m_itemCreat.GetItem();
+					m_questSO.quests[itemNum] = input;
+					m_targetObject.GetComponent<ItemView>().Initialize();
+
 					OnResetButtons();
 					m_targetObject.GetComponent<ItemView>().SetHighlightAnimation(false);
 					m_targetObject = null;
-					m_bAddMode = true; 
+					m_bAddMode = true;
 				}
+				m_itemCreat.ResetsInputItem();
 			};
 		}
 		//取り消し
@@ -235,6 +244,7 @@ public class ItemManager : MonoBehaviour
 			m_selectObject = null;
 			m_bAddMode = false;
 
+			//デリゲートに保存
 			AfterAction = (bool bCheck) => {
 				if (bCheck)
 				{
