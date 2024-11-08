@@ -1,27 +1,23 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor.TextCore.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
+
+public class QuestConverter
+{
+	const byte POSSIBLE = 0x01;
+	const byte NO_NEW = 0x02;
+	const byte CLEAR = 0x04;
+
+
+}
 
 public class ItemManager : MonoBehaviour
 {
-#if false
-	[System.Serializable]
-	class TextMeshProsSeting
-	{
-		[SerializeField] TextMeshProUGUI[] m_meshProUGUIs;
-		[SerializeField] TMP_FontAsset m_tMP_FontAsset;
-		public void SetFonts()
-		{
-			foreach (TextMeshProUGUI item in m_meshProUGUIs)
-				item.font = m_tMP_FontAsset;
-		}
-	} 
+#if DEBUG
+	[Header("TMP_UGUI変更用")]
+	[SerializeField] GameObject[] m_meshProUGUIs;
 #endif
 
 	[Header("Item類")]
@@ -49,6 +45,8 @@ public class ItemManager : MonoBehaviour
 	GameObject m_targetObject;
 	string m_search;
 	bool m_bAddMode;
+
+	//OKorNOボタンの
 	delegate void After(bool bCheck);
 	After AfterAction;
 
@@ -147,8 +145,12 @@ public class ItemManager : MonoBehaviour
 			RaycastResult itemObject = result.Find(o => o.gameObject.CompareTag("ItemUI"));
 			m_selectObject = itemObject.gameObject;
 
-			if (m_targetObject != m_selectObject)
-				m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(true);
+			//追加モード以外は無効
+			if (m_bAddMode)
+			{
+				if (m_targetObject != m_selectObject)
+					m_selectObject?.transform.GetComponent<ItemView>().SetHighlightAnimation(true); 
+			}
 
 			//FoldoutUIのタグがある場合
 			//クエストの詳細を表示する
@@ -157,7 +159,7 @@ public class ItemManager : MonoBehaviour
 		}
 	}
 
-	//ボタン
+	//選択ボタン
 	public void SelectButton(bool bSelect)
 	{
 		m_itemConfirmation.HideConfirmationWindow();
@@ -165,7 +167,6 @@ public class ItemManager : MonoBehaviour
 		if (m_bAddMode) return;
 
 		AfterAction(bSelect);
-		AfterAction = null;
 	}
 
 	//追加or変更終了ボタン
@@ -178,16 +179,15 @@ public class ItemManager : MonoBehaviour
 			return;
 		}
 
-		//追加
 		if (m_bAddMode)
 		{
 			m_questSO.quests.Add(work);
 			GeneratItem(work);
 		}
-		//変更
 		else
 		{
-			Quest item = m_questSO.quests.Find(n => n.GetQuest().name == m_targetObject.name);
+			//Quest保存先から同じものを取得
+			Quest item = GetQuest(m_targetObject.name);
 			m_itemConfirmation.SetDisplayContent(MESSAGE.CHANGING_CONFIRMATION, item, work);
 		}
 	}
@@ -195,7 +195,6 @@ public class ItemManager : MonoBehaviour
 	//編集ボタン
 	public void EditButton()
 	{
-		//編集
 		if (m_bAddMode)
 		{
 			if (!m_selectObject) return;
@@ -207,28 +206,33 @@ public class ItemManager : MonoBehaviour
 			AfterAction = null;
 			m_targetObject.GetComponent<ItemView>().SetHighlightAnimation(true, true);
 
-			Quest item = m_questSO.quests.Find(n => n.GetQuest().name == m_targetObject.name);
+			Quest item = GetQuest(m_targetObject.name);
 			m_itemCreat.SetContents(item);
 
-			AfterAction = (bool bCheck) => {
-				if (bCheck)
-				{
-					int itemNum = m_questSO.quests.FindIndex(n => n.GetQuest().name == m_targetObject.name);
-					Quest input = m_itemCreat.GetItem();
-					m_questSO.quests[itemNum] = input;
-					m_targetObject.GetComponent<ItemView>().Initialize();
+			//変更時のデリゲート
+			AfterAction = (bool bCheck) =>
+			{
+				if (!bCheck) return;
 
-					OnResetButtons();
-					m_targetObject.GetComponent<ItemView>().SetHighlightAnimation(false);
-					m_targetObject = null;
-					m_bAddMode = true;
-				}
+				int itemNum = m_questSO.quests.FindIndex(n => n.GetQuest().name == m_targetObject.name);
+				Quest input = m_itemCreat.GetItem();
+				m_questSO.quests[itemNum] = input;
+				m_targetObject.GetComponent<ItemView>().Initialize(input);
+
+				OnResetButtons();
+				m_targetObject.GetComponent<ItemView>().SetHighlightAnimation(false);
+				m_targetObject = null;
+				m_bAddMode = true;
+
 				m_itemCreat.ResetsInputItem();
+				AfterAction = null;
 			};
 		}
 		//取り消し
 		else
 		{
+			Quest item = GetQuest(m_targetObject.name);
+			m_itemCreat.SetContents(item);
 			AfterAction(true);
 		}
 	}
@@ -239,13 +243,14 @@ public class ItemManager : MonoBehaviour
 		//削除
 		if (m_selectObject && m_bAddMode) 
 		{
-			Quest item = m_questSO.quests.Find(n => n.GetQuest().name == m_selectObject.name);
 			m_targetObject = m_selectObject;
 			m_selectObject = null;
+			m_targetObject.GetComponent<ItemView>().SetHighlightAnimation(true, true);
 			m_bAddMode = false;
 
-			//デリゲートに保存
-			AfterAction = (bool bCheck) => {
+			//削除時のデリゲート
+			AfterAction = (bool bCheck) => 
+			{
 				if (bCheck)
 				{
 					Quest item = m_questSO.quests.Find(n => n.GetQuest().name == m_targetObject.name);
@@ -253,11 +258,21 @@ public class ItemManager : MonoBehaviour
 					m_questSO.quests.Remove(item);
 					Destroy(m_targetObject); 
 				}
+
+				m_targetObject.GetComponent<ItemView>().SetHighlightAnimation(false);
 				m_targetObject = null;
 				m_bAddMode = true;
+				AfterAction = null;
 			};
 
+			Quest item = GetQuest(m_targetObject.name);
 			m_itemConfirmation.SetDisplayContent(MESSAGE.DELETING_CONFIRMATION, item);
 		}
+	}
+
+	//クエストを取得
+	Quest GetQuest(string questName)
+	{
+		return m_questSO.quests.Find(n => n.GetQuest().name == questName);
 	}
 }

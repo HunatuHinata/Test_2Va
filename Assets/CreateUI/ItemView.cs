@@ -7,6 +7,11 @@ public class ItemView : MonoBehaviour
 {
 	const float OVER_ALPHA = 50.0f;
 
+#if DEBUG
+	[Header("TMP_UGUIïœçXóp")]
+	[SerializeField] GameObject[] m_meshProUGUIs;
+#endif
+
 	[SerializeField] float m_closeSize;
 	[SerializeField] float m_openSize;
 
@@ -28,8 +33,10 @@ public class ItemView : MonoBehaviour
 	}
 
 	//èâä˙âª
-	public void Initialize()
+	public void Initialize(in Quest quest = null)
 	{
+		if (quest != null) m_quest = quest; 
+
 		SetItemDatas();
 		BackScaleChange();
 		ActiveObjectChanges();
