@@ -256,7 +256,8 @@ public class ItemManager : MonoBehaviour
 					Quest item = m_questSO.quests.Find(n => n.GetQuest().name == m_targetObject.name);
 					int itemNum = m_questSO.quests.FindIndex(n => n.GetQuest().name == m_targetObject.name);
 					m_questSO.quests.Remove(item);
-					Destroy(m_targetObject); 
+					m_items.Remove(m_targetObject);
+					Destroy(m_targetObject);
 				}
 
 				m_targetObject.GetComponent<ItemView>().SetHighlightAnimation(false);
